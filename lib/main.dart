@@ -7,6 +7,7 @@ import 'services/google_calendar_service.dart';
 import 'services/notification_service.dart';
 import 'services/storage_service.dart';
 import 'services/tray_and_window_service.dart';
+import 'services/web_account_service.dart';
 
 Future<bool> _ensureSingleInstance() async {
   if (!(Platform.isWindows || Platform.isLinux || Platform.isMacOS)) {
@@ -65,6 +66,9 @@ void main(List<String> args) async {
       GoogleCalendarService.instance.syncAll();
     }
   });
+
+  // 2-1. calendarWEB アカウント (保存済みトークンで自動ログイン)
+  WebAccountService.instance.init();
 
   // 3. 通知サービス初期化
   if (Platform.isWindows || Platform.isLinux || Platform.isMacOS) {

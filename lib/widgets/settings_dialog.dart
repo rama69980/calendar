@@ -5,6 +5,7 @@ import '../services/google_calendar_service.dart';
 import '../services/notification_service.dart';
 import '../services/storage_service.dart';
 import '../services/tray_and_window_service.dart';
+import 'web_account_section.dart';
 
 class SettingsDialog extends StatefulWidget {
   final ValueChanged<bool>? onThemeChanged;
@@ -164,6 +165,10 @@ class _SettingsDialogState extends State<SettingsDialog> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
+                    // calendarWEB アカウント (ブラウザ連携ログイン)
+                    const WebAccountSection(),
+                    const SizedBox(height: 16),
+
                     // ==========================================
                     // 🌟 Google Calendar Integration Section
                     // ==========================================

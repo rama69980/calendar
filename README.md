@@ -17,11 +17,25 @@ flutter run -d windows --dart-define-from-file=google_oauth.json
 flutter test
 ```
 
+## calendarWEB 계정 로그인
+
+환경설정 > 「calendarWEB アカウント」에서 브라우저로 calendarWEB 에 로그인하면 앱에서도 같은 계정을 씁니다.
+(웹에 이미 로그인돼 있으면 「許可してログイン」만 누르면 됨. 구조는 `lib/services/web_account_service.dart` 주석 참고)
+
+접속 주소 기본값은 로컬 개발용(`http://localhost:5173`, `http://localhost:8080`)이라 배포판은 빌드할 때 바꿔야 합니다.
+
+| dart-define | 설명 | 기본값 |
+|---|---|---|
+| `CALENDARWEB_URL` | calendarWEB 프론트 주소 | `http://localhost:5173` |
+| `CALENDARWEB_API_URL` | calendarWEB 백엔드 주소 | `http://localhost:8080` |
+
 ## 배포
 
 ```bash
 flutter build windows --release --dart-define-from-file=google_oauth.json   # build/windows/x64/runner/Release/calendar.exe
 ```
+
+calendarWEB 운영 주소를 쓰려면 `--dart-define=CALENDARWEB_URL=... --dart-define=CALENDARWEB_API_URL=...` 를 추가하세요.
 
 `installer.iss` (Inno Setup) 로 `installers/CalendarSetup.exe` 를 만듭니다. 자세한 내용은 [docs/RELEASE_AND_PACKAGING.md](docs/RELEASE_AND_PACKAGING.md).
 

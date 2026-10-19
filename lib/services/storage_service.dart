@@ -17,6 +17,10 @@ class StorageService {
   static const String _googleLastSyncTimeKey = 'google_last_sync_time';
   static const String _googleAutoSyncKey = 'setting_google_auto_sync';
 
+  // calendarWEB Account Keys
+  static const String _webAccountTokenKey = 'web_account_token';
+  static const String _webAccountProfileKey = 'web_account_profile';
+
   static SharedPreferences? _prefs;
 
   static Future<void> init() async {
@@ -199,6 +203,25 @@ class StorageService {
     await prefs.remove(_googleUserNameKey);
     await prefs.remove(_googleUserPhotoUrlKey);
     await prefs.remove(_googleLastSyncTimeKey);
+  }
+
+  // calendarWEB Account (トークン + 表示用プロフィール JSON)
+  static String? getWebAccountToken() => prefs.getString(_webAccountTokenKey);
+
+  static String? getWebAccountProfileJson() => prefs.getString(_webAccountProfileKey);
+
+  static Future<void> setWebAccount(String token, String profileJson) async {
+    await prefs.setString(_webAccountTokenKey, token);
+    await prefs.setString(_webAccountProfileKey, profileJson);
+  }
+
+  static Future<void> setWebAccountProfileJson(String profileJson) async {
+    await prefs.setString(_webAccountProfileKey, profileJson);
+  }
+
+  static Future<void> clearWebAccount() async {
+    await prefs.remove(_webAccountTokenKey);
+    await prefs.remove(_webAccountProfileKey);
   }
 
   // General Settings
