@@ -1,7 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:untitled/models/schedule_event.dart';
-import 'package:untitled/services/storage_service.dart';
+import 'package:calendar/models/schedule_event.dart';
+import 'package:calendar/services/storage_service.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();

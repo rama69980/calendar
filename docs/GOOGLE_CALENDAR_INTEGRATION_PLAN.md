@@ -48,7 +48,7 @@ sequenceDiagram
 
 ## 3. 데이터 모델 확장 (Model Extension)
 
-기존 [schedule_event.dart](file:///c:/Users/3031232/StudioProjects/untitled/lib/models/schedule_event.dart) 모델에 구글 캘린더 연동 필드를 추가합니다.
+기존 [schedule_event.dart](file:///c:/Users/3031232/project/calendarProject/calendar/lib/models/schedule_event.dart) 모델에 구글 캘린더 연동 필드를 추가합니다.
 
 ### 3.1 추가 필드 명세
 
@@ -120,7 +120,7 @@ enum SyncStatus {
 
 ---
 
-## 5. 필요 패키지 의존성 ([pubspec.yaml](file:///c:/Users/3031232/StudioProjects/untitled/pubspec.yaml))
+## 5. 필요 패키지 의존성 ([pubspec.yaml](file:///c:/Users/3031232/project/calendarProject/calendar/pubspec.yaml))
 
 ```yaml
 dependencies:

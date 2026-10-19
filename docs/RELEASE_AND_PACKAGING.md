@@ -9,7 +9,7 @@
 Windows 사용자에게는 더블 클릭 한 번으로 설치되는 **Inno Setup 기반 설치 마법사(`CalendarSetup.exe`)**를 제공합니다.
 
 ### 📍 생성된 설치 파일 위치
-* **경로**: [`installers/CalendarSetup.exe`](file:///c:/Users/3031232/StudioProjects/untitled/installers/CalendarSetup.exe)
+* **경로**: [`installers/CalendarSetup.exe`](file:///c:/Users/3031232/project/calendarProject/calendar/installers/CalendarSetup.exe)
 * **특징**:
   * 일본어/영어 다국어 설치 마법사 지원 (일본어 기본값)
   * 바탕화면 바로가기 아이콘 자동 생성 옵션

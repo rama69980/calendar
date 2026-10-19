@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:untitled/main.dart';
-import 'package:untitled/services/storage_service.dart';
+import 'package:calendar/main.dart';
+import 'package:calendar/services/storage_service.dart';
 
 void main() {
   testWidgets('Calendar App smoke test', (WidgetTester tester) async {

@@ -6,7 +6,7 @@
 
 ## 1. 캘린더 및 일정 시각화 (Calendar & Schedule View)
 
-### 1.1 캘린더 위젯 ([table_calendar](file:///c:/Users/3031232/StudioProjects/untitled/lib/screens/calendar_screen.dart))
+### 1.1 캘린더 위젯 ([table_calendar](file:///c:/Users/3031232/project/calendarProject/calendar/lib/screens/calendar_screen.dart))
 * **포맷 전환**: Month(월간), 2 Weeks(2주간), Week(주간) 뷰 지원.
 * **날짜 선택 및 이동**:
   * 특정 날짜 클릭 시 해당 날짜의 일정 목록 즉시 필터링.
@@ -44,7 +44,7 @@
 
 ## 3. 일정 관리 (CRUD & Attributes)
 
-### 3.1 일정 속성 명세 ([schedule_event.dart](file:///c:/Users/3031232/StudioProjects/untitled/lib/models/schedule_event.dart))
+### 3.1 일정 속성 명세 ([schedule_event.dart](file:///c:/Users/3031232/project/calendarProject/calendar/lib/models/schedule_event.dart))
 
 | 속성명 | 타입 | 설명 |
 | :--- | :---: | :--- |
@@ -65,7 +65,7 @@
 | `isDeletedLocally` | `bool` | 오프라인 삭제 툼스톤 플래그 |
 | `createdAt` / `updatedAt` | `DateTime` | 생성 일시 및 최종 수정 일시 |
 
-### 3.2 일정 리스트 및 인터랙션 ([event_list_item.dart](file:///c:/Users/3031232/StudioProjects/untitled/lib/widgets/event_list_item.dart))
+### 3.2 일정 리스트 및 인터랙션 ([event_list_item.dart](file:///c:/Users/3031232/project/calendarProject/calendar/lib/widgets/event_list_item.dart))
 * **완료 토글**: 원클릭으로 완료 상태 전환 (완료 시 취소선 및 투명도 반영).
 * **Google 뱃지**: 구글 캘린더에 연동된 일정에 파란색 `Google` 태그 표시.
 * **수정 및 삭제**: 일정 카드 우측 액션 버튼을 통해 수정 다이얼로그 호출 또는 삭제 확인 팝업 후 제거.
@@ -82,11 +82,11 @@
 
 ## 5. 데스크톱 특화 시스템 기능 (Desktop Native Integration)
 
-### 5.1 중복 실행 방지 (Single Instance Socket Guard) ([main.dart](file:///c:/Users/3031232/StudioProjects/untitled/lib/main.dart))
+### 5.1 중복 실행 방지 (Single Instance Socket Guard) ([main.dart](file:///c:/Users/3031232/project/calendarProject/calendar/lib/main.dart))
 * 로컬 루프백 소켓 포트(`49281`)를 선점하여 단일 인스턴스 보장.
 * 중복 실행 시 기존 실행 프로세스에 `'show'` 신호를 전달하고 기존 창을 즉시 최상위로 복원.
 
-### 5.2 시스템 트레이 상주 및 메뉴 ([tray_and_window_service.dart](file:///c:/Users/3031232/StudioProjects/untitled/lib/services/tray_and_window_service.dart))
+### 5.2 시스템 트레이 상주 및 메뉴 ([tray_and_window_service.dart](file:///c:/Users/3031232/project/calendarProject/calendar/lib/services/tray_and_window_service.dart))
 * **트레이 아이콘**: 좌클릭 시 창 복원/포커스, 우클릭 시 컨텍스트 메뉴 표시.
 * **트레이 메뉴**: 캘린더 열기, 새 일정 추가, 알림 테스트, 자동 시작 토글, 앱 종료.
 
@@ -101,13 +101,13 @@
 ## 6. 백그라운드 알림 엔진 (Notification Engine)
 
 * **스케줄러 주기**: 30초 간격으로 로컬 저장소의 일정을 스캔.
-* **네이티브 토스트 알림 ([local_notifier](file:///c:/Users/3031232/StudioProjects/untitled/lib/services/notification_service.dart))**:
+* **네이티브 토스트 알림 ([local_notifier](file:///c:/Users/3031232/project/calendarProject/calendar/lib/services/notification_service.dart))**:
   * Windows Action Center 토스트 알림 생성 (제목, 시간, 메모, 사전 알림 기준).
   * **토스트 알림 클릭 시**: 트레이에 숨겨진 캘린더 창이 자동으로 열리며 포커스 이동.
 
 ---
 
-## 7. 환경설정 다이얼로그 ([settings_dialog.dart](file:///c:/Users/3031232/StudioProjects/untitled/lib/widgets/settings_dialog.dart))
+## 7. 환경설정 다이얼로그 ([settings_dialog.dart](file:///c:/Users/3031232/project/calendarProject/calendar/lib/widgets/settings_dialog.dart))
 
 1. **Google 캘린더 실시간 연동 섹션**:
    * 연동 상태 및 구글 계정 이메일 표시.
