@@ -46,3 +46,6 @@ app.*.map.json
 
 # Widget Preview related
 .widget_preview/
+
+# Google OAuth client (--dart-define-from-file). 커밋 금지
+google_oauth.json

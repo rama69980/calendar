@@ -7,16 +7,20 @@ Windows / macOS 데스크탑 캘린더 & 스케줄러 앱 (Flutter).
 
 ## 실행
 
+Google 캘린더 연동에 쓰는 OAuth Client ID / Secret 은 코드에 없고 빌드할 때 주입합니다.
+`google_oauth.example.json` 을 `google_oauth.json` 으로 복사해 값을 채우세요 (git 에 올리지 않음).
+자세한 내용은 [docs/GOOGLE_CALENDAR_MANUAL.md](docs/GOOGLE_CALENDAR_MANUAL.md).
+
 ```bash
 flutter pub get
-flutter run -d windows
+flutter run -d windows --dart-define-from-file=google_oauth.json
 flutter test
 ```
 
 ## 배포
 
 ```bash
-flutter build windows --release   # build/windows/x64/runner/Release/calendar.exe
+flutter build windows --release --dart-define-from-file=google_oauth.json   # build/windows/x64/runner/Release/calendar.exe
 ```
 
 `installer.iss` (Inno Setup) 로 `installers/CalendarSetup.exe` 를 만듭니다. 자세한 내용은 [docs/RELEASE_AND_PACKAGING.md](docs/RELEASE_AND_PACKAGING.md).

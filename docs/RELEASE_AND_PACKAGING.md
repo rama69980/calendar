@@ -19,7 +19,7 @@ Windows 사용자에게는 더블 클릭 한 번으로 설치되는 **Inno Setup
 ### 🛠️ Windows 설치 파일 직접 다시 빌드하는 방법
 1. **Flutter Windows 릴리즈 바이너리 빌드**:
    ```powershell
-   flutter build windows --release
+   flutter build windows --release --dart-define-from-file=google_oauth.json
    ```
 2. **Inno Setup 컴파일러 실행**:
    ```powershell
@@ -48,7 +48,7 @@ Mac 환경에서 아래 명령어를 실행합니다:
 flutter pub get
 
 # 2. macOS 릴리즈 빌드
-flutter build macos --release
+flutter build macos --release --dart-define-from-file=google_oauth.json
 
 # 3. 배포용 zip 파일 압축
 ditto -c -k --sequesterRsrc --keepParent build/macos/Build/Products/Release/*.app Calendar-MacOS.zip

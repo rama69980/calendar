@@ -10,19 +10,12 @@ class GoogleAuthService {
   static final GoogleAuthService instance = GoogleAuthService._();
   GoogleAuthService._();
 
-  static final String _clientId = String.fromCharCodes([
-    52, 51, 50, 56, 57, 53, 50, 50, 48, 55, 55, 52, 45, 49, 56, 117, 114, 54,
-    108, 56, 104, 116, 103, 55, 102, 52, 98, 56, 107, 98, 109, 113, 99, 101,
-    98, 54, 99, 109, 55, 56, 99, 51, 56, 115, 99, 46, 97, 112, 112, 115, 46,
-    103, 111, 111, 103, 108, 101, 117, 115, 101, 114, 99, 111, 110, 116, 101,
-    110, 116, 46, 99, 111, 109,
-  ]);
+  // ビルド時に --dart-define(-from-file) で注入する (README / docs/GOOGLE_CALENDAR_MANUAL.md 参照)
+  static const String _clientId = String.fromEnvironment('GOOGLE_CLIENT_ID');
+  static const String _clientSecret = String.fromEnvironment('GOOGLE_CLIENT_SECRET');
 
-  static final String _clientSecret = String.fromCharCodes([
-    71, 79, 67, 83, 80, 88, 45, 87, 110, 101, 76, 67, 122, 76, 98, 95, 104,
-    87, 105, 87, 110, 54, 67, 99, 97, 56, 70, 111, 115, 75, 101, 103, 109,
-    55, 99,
-  ]);
+  /// OAuth クライアント情報がビルドに含まれているか
+  static bool get isConfigured => _clientId.isNotEmpty && _clientSecret.isNotEmpty;
 
   static final ClientId _clientIdentifier = ClientId(_clientId, _clientSecret);
 
@@ -58,8 +51,18 @@ class GoogleAuthService {
       userEmailNotifier.value = savedEmail;
       userNameNotifier.value = savedName;
 
-      if (savedJson != null && savedJson.isNotEmpty) {
+      if (!isConfigured) {
+        debugPrint('[GoogleAuthService] OAuth client is not configured; skipping auto-login');
+      } else if (savedJson != null && savedJson.isNotEmpty) {
         final Map<String, dynamic> data = jsonDecode(savedJson);
+
+        // 別の (削除済みなど) OAuth クライアントで発行されたトークンは使えないので破棄して再ログインさせる
+        if (data['clientId'] != _clientId) {
+          debugPrint('[GoogleAuthService] Saved token belongs to another OAuth client; signing out');
+          await signOut();
+          return false;
+        }
+
         final accessTokenData = data['accessToken'] as Map<String, dynamic>;
 
         final credentials = AccessCredentials(
@@ -106,6 +109,10 @@ class GoogleAuthService {
 
   /// ブラウザ OAuth 2.0 Loopback を通じた Google ログイン
   Future<bool> signIn() async {
+    if (!isConfigured) {
+      debugPrint('[GoogleAuthService] GOOGLE_CLIENT_ID / GOOGLE_CLIENT_SECRET are not set');
+      return false;
+    }
     try {
       debugPrint('[GoogleAuthService] Starting OAuth 2.0 Loopback flow...');
 
@@ -176,6 +183,7 @@ class GoogleAuthService {
   Future<void> _saveCredentials(AccessCredentials credentials) async {
     try {
       final data = {
+        'clientId': _clientId,
         'accessToken': {
           'type': credentials.accessToken.type,
           'data': credentials.accessToken.data,

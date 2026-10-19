@@ -32,6 +32,17 @@ class _SettingsDialogState extends State<SettingsDialog> {
   }
 
   Future<void> _handleGoogleSignIn() async {
+    if (!GoogleAuthService.isConfigured) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Google 連携の設定 (OAuth クライアント) がこのビルドに含まれていません。'),
+          backgroundColor: Color(0xFFEF4444),
+          duration: Duration(seconds: 4),
+        ),
+      );
+      return;
+    }
+
     setState(() {
       _isLoggingIn = true;
     });

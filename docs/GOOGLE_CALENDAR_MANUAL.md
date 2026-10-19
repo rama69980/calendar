@@ -18,9 +18,27 @@
 
 ## 2. Google Cloud Console API 설정 및 발급 정보
 
-### 2.1 적용된 OAuth 2.0 클라이언트 정보
-* **Client ID**: `432895220774-18ur...apps.googleusercontent.com`
-* **Client Secret**: `GOCSPX-Wne...` (프로젝트 내부 설정 완료)
+### 2.1 OAuth 2.0 클라이언트 정보 (빌드 시 주입)
+Client ID / Secret 은 코드에 넣지 않고 **빌드할 때 `--dart-define` 으로 주입**합니다.
+
+1. Google Cloud Console → [API 및 서비스] → [사용자 인증 정보] → **OAuth 클라이언트 ID 만들기** → 유형 **데스크톱 앱**
+2. 프로젝트 루트에 `google_oauth.json` 생성 (`google_oauth.example.json` 복사, **git 에는 올리지 않음**)
+   ```json
+   {
+     "GOOGLE_CLIENT_ID": "....apps.googleusercontent.com",
+     "GOOGLE_CLIENT_SECRET": "GOCSPX-..."
+   }
+   ```
+3. 실행 / 빌드
+   ```bash
+   flutter run -d windows --dart-define-from-file=google_oauth.json
+   flutter build windows --release --dart-define-from-file=google_oauth.json
+   ```
+4. GitHub Actions (macOS 빌드) 는 저장소 Secrets 의 `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET` 을 사용합니다.
+
+* 값 없이 빌드하면 앱은 정상 동작하지만 Google 연동 버튼을 누르면 "설정이 포함되어 있지 않다"는 안내가 나옵니다.
+* 클라이언트를 새로 만들면, 예전 클라이언트로 저장된 로그인 정보는 앱이 자동으로 지우므로 **한 번 다시 Google 로그인**하면 됩니다.
+
 * **Redirect URI**: `http://localhost` (Loopback IP Flow)
 * **API Scopes**:
   * `https://www.googleapis.com/auth/calendar` (Google Calendar API 전체 권한)
