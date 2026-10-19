@@ -12,8 +12,20 @@ class WebAccount {
   final String email;
   final String? nickname;
   final String? profileImage;
+  final bool admin;
+  /// NONE / PENDING (承認待ち) / APPROVED (社員) / REJECTED
+  final String employeeStatus;
+  /// 管理者または承認済み社員: 他の社員の予定を見られる
+  final bool memberAccess;
 
-  const WebAccount({required this.email, this.nickname, this.profileImage});
+  const WebAccount({
+    required this.email,
+    this.nickname,
+    this.profileImage,
+    this.admin = false,
+    this.employeeStatus = 'NONE',
+    this.memberAccess = false,
+  });
 
   String get displayName =>
       (nickname != null && nickname!.trim().isNotEmpty) ? nickname! : email;
@@ -27,12 +39,18 @@ class WebAccount {
         email: json['email'] as String,
         nickname: json['usernickname'] as String?,
         profileImage: json['profileImage'] as String?,
+        admin: json['admin'] as bool? ?? false,
+        employeeStatus: json['employeeStatus'] as String? ?? 'NONE',
+        memberAccess: json['memberAccess'] as bool? ?? false,
       );
 
   Map<String, dynamic> toJson() => {
         'email': email,
         'usernickname': nickname,
         'profileImage': profileImage,
+        'admin': admin,
+        'employeeStatus': employeeStatus,
+        'memberAccess': memberAccess,
       };
 }
 

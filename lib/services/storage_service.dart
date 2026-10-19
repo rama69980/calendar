@@ -57,11 +57,15 @@ class StorageService {
     }
   }
 
+  /// 予定が保存されるたびに増える (チームへの自動アップロードなどが監視する)
+  static final ValueNotifier<int> eventsRevision = ValueNotifier<int>(0);
+
   static Future<void> saveEvents(List<ScheduleEvent> events) async {
     final List<Map<String, dynamic>> jsonList =
         events.map((e) => e.toJson()).toList();
     final jsonString = jsonEncode(jsonList);
     await prefs.setString(_eventsKey, jsonString);
+    eventsRevision.value++;
   }
 
   static Future<void> addEvent(ScheduleEvent event) async {

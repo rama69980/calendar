@@ -9,6 +9,8 @@ import '../services/storage_service.dart';
 import '../services/tray_and_window_service.dart';
 import '../widgets/event_dialog.dart';
 import '../widgets/event_list_item.dart';
+import '../widgets/members_dialog.dart';
+import '../widgets/schedule_search_dialog.dart';
 import '../widgets/settings_dialog.dart';
 
 enum EventFilter { all, pending, completed }
@@ -251,6 +253,17 @@ class _CalendarScreenState extends State<CalendarScreen> {
     }
   }
 
+  void _showSearch() {
+    showDialog(
+      context: context,
+      builder: (_) => ScheduleSearchDialog(initialDate: _selectedDay, initialQuery: _searchQuery),
+    );
+  }
+
+  void _showMembers() {
+    showDialog(context: context, builder: (_) => const MembersDialog());
+  }
+
   void _showSettings() {
     showDialog(
       context: context,
@@ -388,6 +401,20 @@ class _CalendarScreenState extends State<CalendarScreen> {
             onPressed: () => _showAddEventDialog(_selectedDay),
           ),
           const SizedBox(width: 6),
+
+          // 期間 (年/月/週/日)・メンバーで予定を検索
+          IconButton(
+            icon: const Icon(Icons.manage_search_rounded),
+            tooltip: '予定を検索 (年/月/週/日・メンバー)',
+            onPressed: _showSearch,
+          ),
+
+          // 社員メンバー
+          IconButton(
+            icon: const Icon(Icons.groups_outlined),
+            tooltip: '社員メンバー',
+            onPressed: _showMembers,
+          ),
 
           // Settings button
           IconButton(
@@ -730,6 +757,20 @@ class _CalendarScreenState extends State<CalendarScreen> {
                     });
                   },
                 ),
+              ),
+            ),
+            const SizedBox(width: 6),
+            // この日以外・他の社員も含めて探すときは詳細検索へ
+            SizedBox(
+              height: 38,
+              child: OutlinedButton.icon(
+                style: OutlinedButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(horizontal: 10),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                ),
+                icon: const Icon(Icons.tune, size: 16),
+                label: const Text('詳細検索', style: TextStyle(fontSize: 12.5)),
+                onPressed: _showSearch,
               ),
             ),
           ],

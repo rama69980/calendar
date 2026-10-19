@@ -8,6 +8,7 @@ import 'services/notification_service.dart';
 import 'services/storage_service.dart';
 import 'services/tray_and_window_service.dart';
 import 'services/web_account_service.dart';
+import 'services/member_service.dart';
 
 Future<bool> _ensureSingleInstance() async {
   if (!(Platform.isWindows || Platform.isLinux || Platform.isMacOS)) {
@@ -69,6 +70,9 @@ void main(List<String> args) async {
 
   // 2-1. calendarWEB アカウント (保存済みトークンで自動ログイン)
   WebAccountService.instance.init();
+
+  // 2-2. 社員どうしの予定共有 (ログイン中は自分の予定を自動アップロード)
+  MemberService.instance.start();
 
   // 3. 通知サービス初期化
   if (Platform.isWindows || Platform.isLinux || Platform.isMacOS) {

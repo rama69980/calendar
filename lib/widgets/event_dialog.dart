@@ -30,6 +30,7 @@ class _EventDialogState extends State<EventDialog> {
   late int _selectedColorValue;
   late bool _enableNotification;
   late int _notificationOffsetMinutes;
+  late bool _isPrivate;
 
   @override
   void initState() {
@@ -44,6 +45,7 @@ class _EventDialogState extends State<EventDialog> {
       _selectedColorValue = event.colorValue;
       _enableNotification = event.enableNotification;
       _notificationOffsetMinutes = event.notificationOffsetMinutes;
+      _isPrivate = event.isPrivate;
     } else {
       _titleController = TextEditingController();
       _descriptionController = TextEditingController();
@@ -54,6 +56,7 @@ class _EventDialogState extends State<EventDialog> {
       _selectedColorValue = 0xFF3B82F6; // Default blue
       _enableNotification = true;
       _notificationOffsetMinutes = 0; // 時間ちょうど
+      _isPrivate = false;
     }
   }
 
@@ -106,6 +109,7 @@ class _EventDialogState extends State<EventDialog> {
       isCompleted: isEdit ? widget.event!.isCompleted : false,
       enableNotification: _enableNotification,
       notificationOffsetMinutes: _notificationOffsetMinutes,
+      isPrivate: _isPrivate,
       googleEventId: isEdit ? widget.event!.googleEventId : null,
       etag: isEdit ? widget.event!.etag : null,
       syncStatus: isEdit
@@ -364,6 +368,48 @@ class _EventDialogState extends State<EventDialog> {
                           ),
                         ),
                       ],
+
+                      const Divider(height: 24),
+
+                      // チームに公開するか (非公開ならメンバーには「予定あり」と時間だけ見える)
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Expanded(
+                            child: Row(
+                              children: [
+                                Icon(
+                                  _isPrivate ? Icons.lock_outline : Icons.groups_outlined,
+                                  color: _isPrivate ? Colors.grey : Theme.of(context).colorScheme.primary,
+                                  size: 20,
+                                ),
+                                const SizedBox(width: 8),
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      const Text(
+                                        '非公開にする',
+                                        style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
+                                      ),
+                                      Text(
+                                        _isPrivate
+                                            ? 'チームのメンバーには「予定あり」と時間だけ表示されます'
+                                            : 'チームのメンバーにタイトルとメモが表示されます',
+                                        style: const TextStyle(fontSize: 11.5, color: Colors.grey),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          Switch(
+                            value: _isPrivate,
+                            onChanged: (val) => setState(() => _isPrivate = val),
+                          ),
+                        ],
+                      ),
                     ],
                   ),
                 ),

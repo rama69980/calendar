@@ -48,6 +48,7 @@ dependencies:
   http: ^1.2.2
   url_launcher: ^6.3.0
   crypto: ^3.0.6
+  qr_flutter: ^4.1.0
 
 dev_dependencies:
   flutter_test:

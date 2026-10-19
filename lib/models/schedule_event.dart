@@ -13,6 +13,7 @@ class ScheduleEvent {
   bool enableNotification; // 通知有効化フラグ
   int notificationOffsetMinutes; // 0: 時間ちょうど, 10: 10分前, 30: 30分前, 60: 1時間前, 1440: 1日前
   bool isNotified; // 通知送信済みフラグ
+  bool isPrivate; // 非公開: チームのメンバーには「予定あり」と時間だけ見せる
   final DateTime createdAt;
   DateTime updatedAt;
 
@@ -35,6 +36,7 @@ class ScheduleEvent {
     this.enableNotification = true,
     this.notificationOffsetMinutes = 0,
     this.isNotified = false,
+    this.isPrivate = false,
     DateTime? createdAt,
     DateTime? updatedAt,
     this.googleEventId,
@@ -77,6 +79,7 @@ class ScheduleEvent {
       'enableNotification': enableNotification,
       'notificationOffsetMinutes': notificationOffsetMinutes,
       'isNotified': isNotified,
+      'isPrivate': isPrivate,
       'createdAt': createdAt.toIso8601String(),
       'updatedAt': updatedAt.toIso8601String(),
       'googleEventId': googleEventId,
@@ -100,6 +103,7 @@ class ScheduleEvent {
       enableNotification: json['enableNotification'] as bool? ?? true,
       notificationOffsetMinutes: json['notificationOffsetMinutes'] as int? ?? 0,
       isNotified: json['isNotified'] as bool? ?? false,
+      isPrivate: json['isPrivate'] as bool? ?? false,
       createdAt: json['createdAt'] != null
           ? DateTime.parse(json['createdAt'] as String)
           : DateTime.now(),
@@ -126,6 +130,7 @@ class ScheduleEvent {
     bool? enableNotification,
     int? notificationOffsetMinutes,
     bool? isNotified,
+    bool? isPrivate,
     DateTime? createdAt,
     DateTime? updatedAt,
     String? googleEventId,
@@ -147,6 +152,7 @@ class ScheduleEvent {
       notificationOffsetMinutes:
           notificationOffsetMinutes ?? this.notificationOffsetMinutes,
       isNotified: isNotified ?? this.isNotified,
+      isPrivate: isPrivate ?? this.isPrivate,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? DateTime.now(),
       googleEventId: googleEventId ?? this.googleEventId,
