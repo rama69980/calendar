@@ -7,6 +7,7 @@ import '../services/google_calendar_service.dart';
 import '../services/notification_service.dart';
 import '../services/storage_service.dart';
 import '../services/tray_and_window_service.dart';
+import '../utils/search_period.dart';
 import '../widgets/event_dialog.dart';
 import '../widgets/event_list_item.dart';
 import '../widgets/members_dialog.dart';
@@ -14,6 +15,47 @@ import '../widgets/schedule_search_dialog.dart';
 import '../widgets/settings_dialog.dart';
 
 enum EventFilter { all, pending, completed }
+
+/// 予定リストの絞り込み。[unit] が null なら全期間、それ以外は [anchor] を含む年/月/週/日
+List<ScheduleEvent> filterScheduleEvents(
+  List<ScheduleEvent> events, {
+  required PeriodUnit? unit,
+  required DateTime anchor,
+  EventFilter filter = EventFilter.all,
+  String query = '',
+}) {
+  final period = unit == null ? null : SearchPeriod.of(unit, anchor);
+  final q = query.trim().toLowerCase();
+
+  final result = events.where((e) {
+    if (period != null && !period.contains(e.date)) return false;
+    if (filter == EventFilter.pending && e.isCompleted) return false;
+    if (filter == EventFilter.completed && !e.isCompleted) return false;
+    if (q.isNotEmpty &&
+        !e.title.toLowerCase().contains(q) &&
+        !e.description.toLowerCase().contains(q)) {
+      return false;
+    }
+    return true;
+  }).toList();
+
+  // ソート: 日付順 → 時間指定優先 → 作成順
+  result.sort((a, b) {
+    final byDate = DateTime(a.date.year, a.date.month, a.date.day)
+        .compareTo(DateTime(b.date.year, b.date.month, b.date.day));
+    if (byDate != 0) return byDate;
+    if (a.hasTime && b.hasTime) {
+      return (a.hour * 60 + a.minute).compareTo(b.hour * 60 + b.minute);
+    } else if (a.hasTime) {
+      return -1;
+    } else if (b.hasTime) {
+      return 1;
+    }
+    return a.createdAt.compareTo(b.createdAt);
+  });
+
+  return result;
+}
 
 class CalendarScreen extends StatefulWidget {
   final ValueChanged<bool>? onThemeChanged;
@@ -32,6 +74,8 @@ class _CalendarScreenState extends State<CalendarScreen> {
   List<ScheduleEvent> _allEvents = [];
   EventFilter _currentFilter = EventFilter.all;
   String _searchQuery = '';
+  // 一覧・検索の期間 (null = 全期間)。既定は選択した日のみ
+  PeriodUnit? _periodUnit = PeriodUnit.day;
   final TextEditingController _searchController = TextEditingController();
 
   @override
@@ -72,40 +116,27 @@ class _CalendarScreenState extends State<CalendarScreen> {
     return _allEvents.where((e) => isSameDay(e.date, day)).toList();
   }
 
-  List<ScheduleEvent> _getFilteredEventsForSelectedDay() {
-    var dayEvents = _getEventsForDay(_selectedDay);
+  List<ScheduleEvent> _getEventsInPeriod() {
+    return filterScheduleEvents(_allEvents, unit: _periodUnit, anchor: _selectedDay);
+  }
 
-    // フィルタリング
-    if (_currentFilter == EventFilter.pending) {
-      dayEvents = dayEvents.where((e) => !e.isCompleted).toList();
-    } else if (_currentFilter == EventFilter.completed) {
-      dayEvents = dayEvents.where((e) => e.isCompleted).toList();
+  List<ScheduleEvent> _getFilteredEvents() {
+    return filterScheduleEvents(
+      _allEvents,
+      unit: _periodUnit,
+      anchor: _selectedDay,
+      filter: _currentFilter,
+      query: _searchQuery,
+    );
+  }
+
+  String get _periodSubtitle {
+    final unit = _periodUnit;
+    if (unit == null) return '全期間の予定';
+    if (unit == PeriodUnit.day) {
+      return isSameDay(_selectedDay, DateTime.now()) ? '今日の予定' : '選択した日の予定';
     }
-
-    // 検索クエリ
-    if (_searchQuery.isNotEmpty) {
-      final query = _searchQuery.toLowerCase();
-      dayEvents = dayEvents.where((e) {
-        return e.title.toLowerCase().contains(query) ||
-            e.description.toLowerCase().contains(query);
-      }).toList();
-    }
-
-    // ソート: 時間指定優先、次に作成順
-    dayEvents.sort((a, b) {
-      if (a.hasTime && b.hasTime) {
-        final aTime = a.hour * 60 + a.minute;
-        final bTime = b.hour * 60 + b.minute;
-        return aTime.compareTo(bTime);
-      } else if (a.hasTime) {
-        return -1;
-      } else if (b.hasTime) {
-        return 1;
-      }
-      return a.createdAt.compareTo(b.createdAt);
-    });
-
-    return dayEvents;
+    return '${SearchPeriod.of(unit, _selectedDay).label}の予定';
   }
 
   Future<void> _showAddEventDialog([DateTime? date]) async {
@@ -278,7 +309,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
-    final dayEvents = _getEventsForDay(_selectedDay);
+    final dayEvents = _getEventsInPeriod();
     final totalCount = dayEvents.length;
     final completedCount = dayEvents.where((e) => e.isCompleted).length;
     final pendingCount = totalCount - completedCount;
@@ -650,7 +681,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
     int pendingCount, {
     required bool isExpanded,
   }) {
-    final filteredEvents = _getFilteredEventsForSelectedDay();
+    final filteredEvents = _getFilteredEvents();
     final dateFormat = DateFormat('yyyy年M月d日 (E)', 'ja_JP');
 
     return Column(
@@ -679,10 +710,10 @@ class _CalendarScreenState extends State<CalendarScreen> {
                 ),
                 const SizedBox(height: 2),
                 Text(
-                  isSameDay(_selectedDay, DateTime.now()) ? '今日の予定' : '選択した日の予定',
+                  _periodSubtitle,
                   style: TextStyle(
                     fontSize: 12,
-                    color: isSameDay(_selectedDay, DateTime.now())
+                    color: _periodUnit == PeriodUnit.day && isSameDay(_selectedDay, DateTime.now())
                         ? colorScheme.primary
                         : Colors.grey,
                     fontWeight: FontWeight.w500,
@@ -760,7 +791,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
               ),
             ),
             const SizedBox(width: 6),
-            // この日以外・他の社員も含めて探すときは詳細検索へ
+            // 他の社員の予定も含めて探すときは詳細検索へ
             SizedBox(
               height: 38,
               child: OutlinedButton.icon(
@@ -790,6 +821,23 @@ class _CalendarScreenState extends State<CalendarScreen> {
             ],
           ),
         ),
+        const SizedBox(height: 6),
+
+        // Period Chips (全期間 / 年 / 月 / 週 / 日)
+        SingleChildScrollView(
+          scrollDirection: Axis.horizontal,
+          child: Row(
+            children: [
+              Text('期間', style: TextStyle(fontSize: 12, color: colorScheme.onSurfaceVariant)),
+              const SizedBox(width: 8),
+              _buildPeriodChip('全期間', null),
+              for (final unit in PeriodUnit.values) ...[
+                const SizedBox(width: 6),
+                _buildPeriodChip(unit.label, unit),
+              ],
+            ],
+          ),
+        ),
         const SizedBox(height: 10),
 
         // Event List or Empty State
@@ -799,16 +847,8 @@ class _CalendarScreenState extends State<CalendarScreen> {
                 ? _buildEmptyState(colorScheme)
                 : ListView.builder(
                     itemCount: filteredEvents.length,
-                    itemBuilder: (context, index) {
-                      final event = filteredEvents[index];
-                      return EventListItem(
-                        key: ValueKey(event.id),
-                        event: event,
-                        onToggleComplete: (val) => _toggleComplete(event.id),
-                        onEdit: () => _showEditEventDialog(event),
-                        onDelete: () => _deleteEvent(event.id),
-                      );
-                    },
+                    itemBuilder: (context, index) =>
+                        _buildEventTile(filteredEvents, index, colorScheme),
                   ),
           )
         else
@@ -818,18 +858,62 @@ class _CalendarScreenState extends State<CalendarScreen> {
                   shrinkWrap: true,
                   physics: const NeverScrollableScrollPhysics(),
                   itemCount: filteredEvents.length,
-                  itemBuilder: (context, index) {
-                    final event = filteredEvents[index];
-                    return EventListItem(
-                      key: ValueKey(event.id),
-                      event: event,
-                      onToggleComplete: (val) => _toggleComplete(event.id),
-                      onEdit: () => _showEditEventDialog(event),
-                      onDelete: () => _deleteEvent(event.id),
-                    );
-                  },
+                  itemBuilder: (context, index) =>
+                      _buildEventTile(filteredEvents, index, colorScheme),
                 ),
       ],
+    );
+  }
+
+  // 日単位以外では日付が変わるところに日付見出しを入れる
+  Widget _buildEventTile(List<ScheduleEvent> events, int index, ColorScheme colorScheme) {
+    final event = events[index];
+    final item = EventListItem(
+      key: ValueKey(event.id),
+      event: event,
+      onToggleComplete: (val) => _toggleComplete(event.id),
+      onEdit: () => _showEditEventDialog(event),
+      onDelete: () => _deleteEvent(event.id),
+    );
+    final showDate = _periodUnit != PeriodUnit.day &&
+        (index == 0 || !isSameDay(events[index - 1].date, event.date));
+    if (!showDate) return item;
+
+    const weekdays = ['月', '火', '水', '木', '金', '土', '日'];
+    final d = event.date;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Padding(
+          padding: EdgeInsets.only(top: index == 0 ? 0 : 8, bottom: 2, left: 2),
+          child: Text(
+            '${d.year}/${d.month}/${d.day}(${weekdays[d.weekday - 1]})',
+            style: TextStyle(
+              fontSize: 12,
+              fontWeight: FontWeight.w600,
+              color: colorScheme.primary,
+            ),
+          ),
+        ),
+        item,
+      ],
+    );
+  }
+
+  Widget _buildPeriodChip(String label, PeriodUnit? unit) {
+    final colorScheme = Theme.of(context).colorScheme;
+
+    return ChoiceChip(
+      label: Text(label, style: const TextStyle(fontSize: 12)),
+      selected: _periodUnit == unit,
+      selectedColor: colorScheme.primaryContainer,
+      onSelected: (selected) {
+        if (selected) {
+          setState(() {
+            _periodUnit = unit;
+          });
+        }
+      },
     );
   }
 
