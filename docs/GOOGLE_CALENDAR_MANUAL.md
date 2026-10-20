@@ -41,7 +41,6 @@ Client ID / Secret 은 코드에 넣지 않고 **빌드할 때 `--dart-define` �
 
 * **Redirect URI**: `http://localhost` (Loopback IP Flow)
 * **API Scopes**:
-  * `https://www.googleapis.com/auth/calendar` (Google Calendar API 전체 권한)
   * `https://www.googleapis.com/auth/calendar.events` (일정 읽기/쓰기)
   * `https://www.googleapis.com/auth/userinfo.email` (계정 이메일 조회)
   * `https://www.googleapis.com/auth/userinfo.profile` (계정 프로필 조회)

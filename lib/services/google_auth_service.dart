@@ -19,8 +19,8 @@ class GoogleAuthService {
 
   static final ClientId _clientIdentifier = ClientId(_clientId, _clientSecret);
 
+  // 予定の読み書きだけ (カレンダー自体の作成・共有・削除の権限は要求しない)
   static const List<String> _scopes = [
-    CalendarApi.calendarScope,
     CalendarApi.calendarEventsScope,
     'https://www.googleapis.com/auth/userinfo.email',
     'https://www.googleapis.com/auth/userinfo.profile',
