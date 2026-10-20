@@ -1,6 +1,6 @@
 ; Inno Setup Script for Calendar App
 #define MyAppName "Calendar"
-#define MyAppVersion "1.0.0"
+#define MyAppVersion "2.1.0"
 #define MyAppPublisher "Calendar App"
 #define MyAppExeName "Calendar.exe"
 
@@ -42,4 +42,5 @@ Name: "{autoprograms}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"; IconFile
 Name: "{autodesktop}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"; IconFilename: "{app}\{#MyAppExeName}"; Tasks: desktopicon
 
 [Run]
-Description: "{cm:LaunchProgram,{#StringChange(MyAppName, '&', '&&')}}"; Filename: "{app}\{#MyAppExeName}"; Flags: nowait postinstall skipifsilent
+; 앱 내 자동 업데이트(/SILENT)일 때도 설치 후 앱을 다시 실행한다
+Description: "{cm:LaunchProgram,{#StringChange(MyAppName, '&', '&&')}}"; Filename: "{app}\{#MyAppExeName}"; Flags: nowait postinstall

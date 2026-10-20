@@ -65,3 +65,22 @@ ditto -c -k --sequesterRsrc --keepParent build/macos/Build/Products/Release/*.ap
 ### 🍎 Mac 사용자 전달 시:
 * `Calendar-MacOS.zip` 압축 파일을 전달합니다.
 * 사용자가 압축을 풀고 `Calendar.app`을 **[응용 프로그램(Applications)]** 폴더로 드래그하여 사용합니다.
+
+---
+
+## 4. 앱 내 자동 업데이트 (GitHub Releases)
+
+Windows 앱은 시작할 때 `rama69980/calendar` 의 최신 Release(`releases/latest`)를 확인합니다 (`lib/services/update_service.dart`).
+태그 버전이 지금 앱 버전보다 높고 이름에 `Setup` 이 들어간 `.exe` 가 붙어 있으면 「新しいバージョンがあります」 창을 띄웁니다.
+「今すぐアップデート」를 누르면 설치 파일을 임시 폴더에 받아 `/SILENT` 로 실행하고 앱을 끕니다. 설치가 끝나면 앱이 다시 실행됩니다.
+
+### 새 버전 배포 순서
+1. `pubspec.yaml` 의 `version` 과 `installer.iss` 의 `MyAppVersion` 을 같은 값으로 올립니다 (예: `2.1.0` → `2.2.0`). 이미 있는 데모 Release `v2.0.0` 보다 높아야 합니다.
+2. 위 1장 순서대로 Windows 빌드와 `ISCC.exe installer.iss` 를 실행합니다.
+3. Release 를 만들고 설치 파일을 붙입니다.
+   ```powershell
+   & "C:\Program Files\GitHub CLI\gh.exe" release create v2.2.0 installers/CalendarSetup.exe -R rama69980/calendar --title "Calendar v2.2.0" --notes "변경 내용"
+   ```
+   본문(notes)은 업데이트 창에 그대로 보입니다.
+
+주의: 저장소가 공개라 Release 의 설치 파일(안에 Google OAuth Client Secret 포함)은 누구나 받을 수 있습니다.

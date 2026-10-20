@@ -7,12 +7,14 @@ import '../services/google_calendar_service.dart';
 import '../services/notification_service.dart';
 import '../services/storage_service.dart';
 import '../services/tray_and_window_service.dart';
+import '../services/update_service.dart';
 import '../utils/search_period.dart';
 import '../widgets/event_dialog.dart';
 import '../widgets/event_list_item.dart';
 import '../widgets/members_dialog.dart';
 import '../widgets/schedule_search_dialog.dart';
 import '../widgets/settings_dialog.dart';
+import '../widgets/update_dialog.dart';
 
 enum EventFilter { all, pending, completed }
 
@@ -90,6 +92,19 @@ class _CalendarScreenState extends State<CalendarScreen> {
 
     // Google 同期完了リスナー -> 予定リスト自動更新
     GoogleCalendarService.instance.lastSyncTime.addListener(_onSyncCompleted);
+
+    // 起動時に新しいバージョンを確認
+    WidgetsBinding.instance.addPostFrameCallback((_) => _checkForUpdate());
+  }
+
+  Future<void> _checkForUpdate() async {
+    final update = await UpdateService.instance.checkForUpdate();
+    if (update == null || !mounted) return;
+    await showDialog<void>(
+      context: context,
+      barrierDismissible: false,
+      builder: (_) => UpdateDialog(update: update),
+    );
   }
 
   void _onSyncCompleted() {
