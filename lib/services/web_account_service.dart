@@ -65,9 +65,9 @@ class WebAccountService {
   static final WebAccountService instance = WebAccountService._();
   WebAccountService._();
 
-  // ビルド時に --dart-define で変更可能 (配布版では本番の URL を指定する)
-  static const String webBaseUrl =
-      String.fromEnvironment('CALENDARWEB_URL', defaultValue: 'http://localhost:5173');
+  // ビルド時に --dart-define で変更可能 (既定は Vercel に配布した Web。ローカル開発時は http://localhost:5173 を指定する)
+  static const String webBaseUrl = String.fromEnvironment('CALENDARWEB_URL',
+      defaultValue: 'https://my-test-app-lyart.vercel.app');
   static const String apiBaseUrl =
       String.fromEnvironment('CALENDARWEB_API_URL', defaultValue: 'http://localhost:8080');
 

@@ -22,11 +22,11 @@ flutter test
 환경설정 > 「calendarWEB アカウント」에서 브라우저로 calendarWEB 에 로그인하면 앱에서도 같은 계정을 씁니다.
 (웹에 이미 로그인돼 있으면 「許可してログイン」만 누르면 됨. 구조는 `lib/services/web_account_service.dart` 주석 참고)
 
-접속 주소 기본값은 로컬 개발용(`http://localhost:5173`, `http://localhost:8080`)이라 배포판은 빌드할 때 바꿔야 합니다.
+웹 주소 기본값은 Vercel 배포판(`https://my-test-app-lyart.vercel.app`)입니다. 로그인, 관리자 페이지, 초대 QR 코드가 이 주소를 씁니다. 로컬 웹으로 개발할 때는 `--dart-define=CALENDARWEB_URL=http://localhost:5173` 을 붙이세요. 백엔드 주소는 아직 로컬(`http://localhost:8080`)이 기본값입니다.
 
 | dart-define | 설명 | 기본값 |
 |---|---|---|
-| `CALENDARWEB_URL` | calendarWEB 프론트 주소 | `http://localhost:5173` |
+| `CALENDARWEB_URL` | calendarWEB 프론트 주소 | `https://my-test-app-lyart.vercel.app` |
 | `CALENDARWEB_API_URL` | calendarWEB 백엔드 주소 | `http://localhost:8080` |
 
 ## 사원 일정 공유 · 검색
@@ -43,7 +43,7 @@ flutter test
 flutter build windows --release --dart-define-from-file=google_oauth.json   # build/windows/x64/runner/Release/calendar.exe
 ```
 
-calendarWEB 운영 주소를 쓰려면 `--dart-define=CALENDARWEB_URL=... --dart-define=CALENDARWEB_API_URL=...` 를 추가하세요.
+백엔드를 배포하면 `--dart-define=CALENDARWEB_API_URL=...` 를 추가하세요.
 
 `installer.iss` (Inno Setup) 로 `installers/CalendarSetup.exe` 를 만듭니다. 자세한 내용은 [docs/RELEASE_AND_PACKAGING.md](docs/RELEASE_AND_PACKAGING.md).
 
